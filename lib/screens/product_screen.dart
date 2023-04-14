@@ -59,10 +59,10 @@ class _ProductScreenBody extends StatelessWidget {
                   child: IconButton(
                     onPressed: () async {
                       final picker = ImagePicker();
+                      // ignore: deprecated_member_use
                       final PickedFile? pickedFile = await picker.getImage(
                           source: ImageSource.camera, imageQuality: 100);
                       if (pickedFile == null) {
-                        print('You Dont Select Anything');
                         return;
                       }
 
@@ -129,7 +129,7 @@ class _ProductForm extends StatelessWidget {
                 initialValue: product.name,
                 onChanged: (value) => product.name = value,
                 validator: (value) {
-                  if (value == null || value.length < 1) {
+                  if (value == null || value.isEmpty) {
                     return 'El nombre es obligatorio';
                   }
                 },

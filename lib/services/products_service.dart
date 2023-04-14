@@ -94,8 +94,6 @@ class ProductsService extends ChangeNotifier {
     final streamResponse = await imageUploadRequest.send();
     final resp = await http.Response.fromStream(streamResponse);
     if (resp.statusCode != 200 && resp.statusCode != 201) {
-      print('something went wrong');
-      print(resp.body);
       return null;
     }
     newPictureFile = null;
