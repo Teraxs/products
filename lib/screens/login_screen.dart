@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/providers/login_form_provider.dart';
+import 'package:products_app/services/auth_service.dart';
 import 'package:products_app/ui/input_decorations.dart';
 import 'package:products_app/widgets/widgets.dart';
 import 'package:provider/provider.dart';
@@ -115,32 +116,40 @@ class _LoginForm extends StatelessWidget {
             height: 30,
           ),
           MaterialButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              disabledColor: Colors.grey,
-              elevation: 0,
-              color: Colors.deepPurple,
-              onPressed: loginForm.isLoading
-                  ? null
-                  : () async {
-                      FocusScope.of(context).unfocus();
-                      if (!loginForm.isValidForm()) return;
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            disabledColor: Colors.grey,
+            elevation: 0,
+            color: Colors.deepPurple,
+            onPressed: loginForm.isLoading
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final authService =
+                        Provider.of<AuthService>(context, listen: false);
 
-                      loginForm.isLoading = true;
+                    if (!loginForm.isValidForm()) return;
 
-                      await Future.delayed(const Duration(seconds: 2));
-                      loginForm.isLoading = false;
+                    loginForm.isLoading = true;
+                    final String? errorMesage = await authService.login(
+                        loginForm.email, loginForm.password);
+
+                    if (errorMesage == null) {
                       Navigator.pushReplacementNamed(context, 'home');
-                    },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                child: Text(
-                  loginForm.isLoading ? 'wait...' : 'Enter',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              )),
+                    } else {
+                      print(errorMesage);
+                      loginForm.isLoading = false;
+                    }
+                  },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+              child: Text(
+                loginForm.isLoading ? 'wait...' : 'Enter',
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
         ],
       ),
     );

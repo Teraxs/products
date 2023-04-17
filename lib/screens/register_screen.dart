@@ -116,41 +116,40 @@ class _LoginForm extends StatelessWidget {
             height: 30,
           ),
           MaterialButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            disabledColor: Colors.grey,
+            elevation: 0,
+            color: Colors.deepPurple,
+            onPressed: loginForm.isLoading
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final authService =
+                        Provider.of<AuthService>(context, listen: false);
+
+                    if (!loginForm.isValidForm()) return;
+
+                    loginForm.isLoading = true;
+                    final String? errorMesage = await authService.createUser(
+                        loginForm.email, loginForm.password);
+
+                    if (errorMesage == null) {
+                      Navigator.pushReplacementNamed(context, 'home');
+                    } else {
+                      print(errorMesage);
+                    }
+                    loginForm.isLoading = false;
+                  },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+              child: Text(
+                loginForm.isLoading ? 'wait...' : 'Enter',
+                style: const TextStyle(color: Colors.white),
               ),
-              disabledColor: Colors.grey,
-              elevation: 0,
-              color: Colors.deepPurple,
-              onPressed: loginForm.isLoading
-                  ? null
-                  : () async {
-                      FocusScope.of(context).unfocus();
-                      final authService =
-                          Provider.of<AuthService>(context, listen: false);
-
-                      if (!loginForm.isValidForm()) return;
-
-                      loginForm.isLoading = true;
-                      final String? errorMesage = await authService.createUser(
-                          loginForm.email, loginForm.password);
-
-                      if (errorMesage == null) {
-                        Navigator.pushReplacementNamed(context, 'home');
-                      } else {
-                        print(errorMesage);
-                      }
-
-                      loginForm.isLoading = false;
-                    },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                child: Text(
-                  loginForm.isLoading ? 'wait...' : 'Enter',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              )),
+            ),
+          ),
         ],
       ),
     );
